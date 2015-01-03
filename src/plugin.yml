@@ -1,0 +1,12 @@
+main: prxmium.simplefreeze.Main
+name: SimpleFreeze
+version: 1.3
+commands:
+  freeze:
+    description: Freezes the player.
+    permission: sf.freeze
+    usage: /freeze <player>
+  unfreeze:
+    description: Unfreezes the player.
+    permission: sf.freeze
+    usage: /unfreeze <player>
