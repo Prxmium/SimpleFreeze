@@ -111,7 +111,7 @@ public class Main extends JavaPlugin implements Listener
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
-		loadDataFromFile();
+		loadDataFromFile(event.getPlayer());
 	}
 
 	@EventHandler
@@ -157,7 +157,7 @@ public class Main extends JavaPlugin implements Listener
 		}
 	}
 
-	public void loadDataFromFile()
+	public void loadDataFromFile(Player player)
 	{
 		try (BufferedReader reader = new BufferedReader(new FileReader(dataFile)))
 		{
@@ -166,17 +166,11 @@ public class Main extends JavaPlugin implements Listener
 			{
 				ArrayList<String> data = readDataSet(line);
 
-				for (int i = 0; i < 500; i++)
-				{
-					getLogger().info(Integer.toString(data.size()));
-					getLogger().info(String.valueOf(data.get(0)));
-				}
-
 				double x = Double.parseDouble(data.get(1));
 				double y = Double.parseDouble(data.get(2));
 				double z = Double.parseDouble(data.get(3));
 
-				Location location = new Location(Bukkit.getWorld("world"), x, y, z);
+				Location location = new Location(player.getWorld(), x, y, z);
 
 				if (!frozenPlayers.containsKey(data.get(0)))
 				{
