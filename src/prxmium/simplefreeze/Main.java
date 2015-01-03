@@ -41,13 +41,15 @@ public class Main extends JavaPlugin implements Listener
 				frozenPlayers.put(player, player.getLocation());
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been frozen!");
+
+				return true;
 			}
 			else
 			{
 				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
-			}
 
-			return true;
+				return false;
+			}
 		}
 		if (command.getName().equalsIgnoreCase("unfreeze"))
 		{
@@ -59,13 +61,15 @@ public class Main extends JavaPlugin implements Listener
 				frozenPlayers.remove(player);
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been unfrozen!");
+				
+				return true;
 			}
 			else
 			{
 				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
+				
+				return false;
 			}
-
-			return true;
 		}
 
 		return false;
