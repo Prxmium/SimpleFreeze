@@ -61,13 +61,13 @@ public class Main extends JavaPlugin implements Listener
 				frozenPlayers.remove(player);
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been unfrozen!");
-				
+
 				return true;
 			}
 			else
 			{
 				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
-				
+
 				return false;
 			}
 		}
