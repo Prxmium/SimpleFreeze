@@ -27,7 +27,7 @@ public class Main extends JavaPlugin implements Listener
 		getLogger().info("Successfully disabled " + getName() + ".");
 	}
 
-	private HashMap<Player, Location> frozenPlayers = new HashMap<>();
+	private HashMap<String, Location> frozenPlayers = new HashMap<>();
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
@@ -38,7 +38,9 @@ public class Main extends JavaPlugin implements Listener
 				@SuppressWarnings("deprecation")
 				Player player = Bukkit.getPlayer(args[0]);
 
-				frozenPlayers.put(player, player.getLocation());
+				String playerName = player.getName();
+
+				frozenPlayers.put(playerName, player.getLocation());
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been frozen!");
 
@@ -58,7 +60,9 @@ public class Main extends JavaPlugin implements Listener
 				@SuppressWarnings("deprecation")
 				Player player = Bukkit.getPlayer(args[0]);
 
-				frozenPlayers.remove(player);
+				String playerName = player.getName();
+
+				frozenPlayers.remove(playerName);
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been unfrozen!");
 
