@@ -35,12 +35,12 @@ public class Main extends JavaPlugin implements Listener
 
 		getServer().getPluginManager().registerEvents(this, this);
 
-		getLogger().info("Successfully enabled " + getName() + ".");
+		getLogger().info("Successfully enabled " + getName() + "!");
 	}
 
 	public void onDisable()
 	{
-		getLogger().info("Successfully disabled " + getName() + ".");
+		getLogger().info("Successfully disabled " + getName() + "!");
 	}
 
 	private HashMap<String, Location> frozenPlayers = new HashMap<>();
