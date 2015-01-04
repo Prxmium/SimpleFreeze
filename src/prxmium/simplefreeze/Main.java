@@ -2,12 +2,14 @@ package prxmium.simplefreeze;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,7 +33,7 @@ public class Main extends JavaPlugin implements Listener
 
 	public void onEnable()
 	{
-		checkAndCreate();
+		exists();
 
 		getServer().getPluginManager().registerEvents(this, this);
 
@@ -40,6 +42,8 @@ public class Main extends JavaPlugin implements Listener
 
 	public void onDisable()
 	{
+		savePlayerData();
+
 		getLogger().info("Successfully disabled " + getName() + "!");
 	}
 
@@ -56,15 +60,25 @@ public class Main extends JavaPlugin implements Listener
 
 				String playerName = player.getName();
 
-				frozenPlayers.put(playerName, player.getLocation());
+				Location location = player.getLocation();
+
+				frozenPlayers.put(playerName, location);
+
+				String x = Double.toString(location.getX());
+				String y = Double.toString(location.getY());
+				String z = Double.toString(location.getZ());
+
+				writeDataSet(playerName + delimiter + x + delimiter + y + delimiter + z + delimiter);
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been frozen!");
+
+				sender.sendMessage(ChatColor.DARK_AQUA + "You've frozen " + playerName + "!");
 
 				return true;
 			}
 			else
 			{
-				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
+				sender.sendMessage(ChatColor.DARK_RED + "Wrong syntax!");
 
 				return false;
 			}
@@ -82,11 +96,13 @@ public class Main extends JavaPlugin implements Listener
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been unfrozen!");
 
+				sender.sendMessage(ChatColor.DARK_AQUA + "You've unfrozen " + playerName + "!");
+
 				return true;
 			}
 			else
 			{
-				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
+				sender.sendMessage(ChatColor.DARK_RED + "Wrong syntax!");
 
 				return false;
 			}
@@ -140,7 +156,7 @@ public class Main extends JavaPlugin implements Listener
 		}
 	}
 
-	public void checkAndCreate()
+	public boolean exists()
 	{
 		if (!folderFile.exists() || !dataFile.exists())
 		{
@@ -154,7 +170,11 @@ public class Main extends JavaPlugin implements Listener
 			{
 				e.printStackTrace();
 			}
+
+			return false;
 		}
+
+		return true;
 	}
 
 	public void loadDataFromFile(Player player)
@@ -166,19 +186,60 @@ public class Main extends JavaPlugin implements Listener
 			{
 				ArrayList<String> data = readDataSet(line);
 
-				double x = Double.parseDouble(data.get(1));
-				double y = Double.parseDouble(data.get(2));
-				double z = Double.parseDouble(data.get(3));
-
-				Location location = new Location(player.getWorld(), x, y, z);
-
-				if (!frozenPlayers.containsKey(data.get(0)))
+				if (player.getName().equals(data.get(0)))
 				{
-					frozenPlayers.put(data.get(0), location);
+					double x = Double.parseDouble(data.get(1));
+					double y = Double.parseDouble(data.get(2));
+					double z = Double.parseDouble(data.get(3));
+
+					Location location = new Location(player.getWorld(), x, y, z);
+
+					if (!frozenPlayers.containsKey(player.getName()))
+					{
+						frozenPlayers.put(player.getName(), location);
+					}
 				}
 			}
 		}
 		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void writeDataSet(String dataSet)
+	{
+		try (PrintWriter writer = new PrintWriter(dataFile))
+		{
+			writer.println(dataSet);
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void savePlayerData()
+	{
+		try (PrintWriter writer = new PrintWriter(dataFile))
+		{
+			Set<String> keys = frozenPlayers.keySet();
+
+			for (String key : keys)
+			{
+				@SuppressWarnings("deprecation")
+				Player player = Bukkit.getPlayer(key);
+
+				Location location = player.getLocation();
+
+				String x = Double.toString(location.getX());
+				String y = Double.toString(location.getY());
+				String z = Double.toString(location.getZ());
+
+				writer.println(key + delimiter + x + delimiter + y + delimiter + z + delimiter);
+			}
+		}
+		catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
 		}
