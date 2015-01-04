@@ -1,6 +1,6 @@
 main: prxmium.simplefreeze.Main
 name: SimpleFreeze
-version: 1.4.2
+version: 1.4.3
 commands:
   freeze:
     description: Freezes the player.
