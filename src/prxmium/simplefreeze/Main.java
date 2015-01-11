@@ -1,6 +1,7 @@
 package prxmium.simplefreeze;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -90,10 +91,27 @@ public class Main extends JavaPlugin implements Listener
 			}
 			else
 			{
-				sender.sendMessage(ChatColor.DARK_RED + "Wrong syntax!");
+				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
 
 				return false;
 			}
+		}
+		if (command.getName().equalsIgnoreCase("frozenplayers"))
+		{
+			if (frozenPlayers.isEmpty()) sender.sendMessage(ChatColor.RED + "Nobody is frozen!");
+			else if (!frozenPlayers.isEmpty())
+			{
+				sender.sendMessage(ChatColor.DARK_AQUA + "Frozen players:");
+
+				Set<String> keySet = frozenPlayers.keySet();
+
+				for (String key : keySet)
+				{
+					sender.sendMessage(ChatColor.DARK_AQUA + "- " + key);
+				}
+			}
+
+			return true;
 		}
 
 		return false;
