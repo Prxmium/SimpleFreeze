@@ -17,33 +17,30 @@ import org.bukkit.entity.Player;
 
 public class DataHandler
 {
-	private File folderFile = new File("plugins/SimpleFreeze");
-	private File dataFile = new File("plugins/SimpleFreeze/data.txt");
+	private static final String directory = "plugins/SimpleFreeze/data.txt";
+	private static final String delimiter = ";";
 
-	private final String delimiter = ";";
+	private static final File dataFile = new File(directory);
 
-	public boolean exists()
+	public static boolean validate()
 	{
-		if (!folderFile.exists() || !dataFile.exists())
-		{
-			folderFile.mkdirs();
-
-			try
-			{
-				dataFile.createNewFile();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-
-			return false;
-		}
-
-		return true;
+		if (!dataFile.exists()) return false;
+		else return true;
 	}
 
-	public void savePlayerData(HashMap<String, Location> frozenPlayers)
+	public static void createFile()
+	{
+		try
+		{
+			dataFile.createNewFile();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static void savePlayerData(HashMap<String, Location> frozenPlayers)
 	{
 		try (PrintWriter writer = new PrintWriter(dataFile))
 		{
@@ -69,7 +66,7 @@ public class DataHandler
 		}
 	}
 
-	public void loadDataFromFile(Player player, HashMap<String, Location> frozenPlayers)
+	public static void loadDataFromFile(Player player, HashMap<String, Location> frozenPlayers)
 	{
 		try (BufferedReader reader = new BufferedReader(new FileReader(dataFile)))
 		{
@@ -99,7 +96,7 @@ public class DataHandler
 		}
 	}
 
-	public void writeDataSet(String val1, String val2, String val3, String val4)
+	public static void writeDataSet(String val1, String val2, String val3, String val4)
 	{
 		String dataSet = val1 + delimiter + val2 + delimiter + val3 + delimiter + val4 + delimiter;
 
@@ -113,7 +110,7 @@ public class DataHandler
 		}
 	}
 
-	public ArrayList<String> readDataSet(String dataSet)
+	public static ArrayList<String> readDataSet(String dataSet)
 	{
 		ArrayList<String> data = new ArrayList<>();
 
