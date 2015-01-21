@@ -1,4 +1,4 @@
-package prxmium.simplefreeze;
+package main;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -17,20 +17,17 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import config.ConfigHandler;
+
 public class Main extends JavaPlugin implements Listener
 {
+	FileHandler fileHandler = new FileHandler("plugins/SimpleFreeze");
+
 	public void onEnable()
 	{
-		if (!FileHandler.validateFiles())
-		{
-			FileHandler.createFolder();
-			DataHandler.createFile();
-			ConfigHandler.createConfig();
-		}
-		else
-		{
-			ConfigHandler.loadKeys();
-		}
+		fileHandler.validateFiles();
+
+		ConfigHandler.loadKeys();
 
 		getServer().getPluginManager().registerEvents(this, this);
 
@@ -70,6 +67,11 @@ public class Main extends JavaPlugin implements Listener
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been frozen!");
 
 				sender.sendMessage(ChatColor.DARK_AQUA + "You've frozen " + playerName + "!");
+
+				if (Boolean.parseBoolean(ConfigHandler.KICK_ON_FREEZE.getValue()))
+				{
+					player.kickPlayer("You've been frozen.");
+				}
 
 				return true;
 			}
@@ -128,7 +130,7 @@ public class Main extends JavaPlugin implements Listener
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent event)
 	{
-		if (Boolean.parseBoolean(ConfigHandler.MUTE_KEY.getValue()) && frozenPlayers.containsKey(event.getPlayer().getName()))
+		if (Boolean.parseBoolean(ConfigHandler.MUTE_ON_FREEZE.getValue()) && frozenPlayers.containsKey(event.getPlayer().getName()))
 		{
 			event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "You're frozen and can't speak!");
 			event.setCancelled(true);

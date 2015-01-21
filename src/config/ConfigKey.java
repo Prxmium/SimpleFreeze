@@ -1,4 +1,4 @@
-package prxmium.simplefreeze;
+package config;
 
 public class ConfigKey
 {

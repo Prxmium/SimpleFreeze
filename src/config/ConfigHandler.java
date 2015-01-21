@@ -1,4 +1,4 @@
-package prxmium.simplefreeze;
+package config;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,11 +16,11 @@ public class ConfigHandler
 
 	private static final File configFile = new File(directory);
 
-	public static final ConfigKey MUTE_KEY = new ConfigKey("mute-on-freeze", "false");
-	public static final ConfigKey DEBUG_KEY = new ConfigKey("show-debug-info", "false");
+	public static final ConfigKey MUTE_ON_FREEZE = new ConfigKey("mute-on-freeze", "false");
+	public static final ConfigKey KICK_ON_FREEZE = new ConfigKey("kick-on-freeze", "false");
 
 	private static final ConfigKey[] configKeys =
-	{ MUTE_KEY, DEBUG_KEY };
+	{ MUTE_ON_FREEZE, KICK_ON_FREEZE };
 
 	public static boolean validate()
 	{

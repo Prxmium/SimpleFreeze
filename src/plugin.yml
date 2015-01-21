@@ -1,4 +1,4 @@
-main: prxmium.simplefreeze.Main
+main: main.Main
 name: SimpleFreeze
 version: 1.5
 commands:
