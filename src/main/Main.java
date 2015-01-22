@@ -1,4 +1,4 @@
-package prxmium.simplefreeze;
+package main;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -18,11 +19,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener
 {
-	private final DataHandler dataHandler = new DataHandler();
+	FileHandler fileHandler = new FileHandler("plugins/SimpleFreeze");
+
+	Config config = new Config();
 
 	public void onEnable()
 	{
-		dataHandler.exists();
+		config.validate();
+
+		if (!DataHandler.validate()) DataHandler.createFile();
 
 		getServer().getPluginManager().registerEvents(this, this);
 
@@ -31,7 +36,7 @@ public class Main extends JavaPlugin implements Listener
 
 	public void onDisable()
 	{
-		dataHandler.savePlayerData(frozenPlayers);
+		DataHandler.savePlayerData(frozenPlayers);
 
 		getLogger().info("Successfully disabled " + getName() + "!");
 	}
@@ -40,7 +45,7 @@ public class Main extends JavaPlugin implements Listener
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (command.getName().equalsIgnoreCase("freeze"))
+		if (label.equalsIgnoreCase("freeze"))
 		{
 			if (args.length > 0)
 			{
@@ -57,11 +62,13 @@ public class Main extends JavaPlugin implements Listener
 				String y = Double.toString(location.getY());
 				String z = Double.toString(location.getZ());
 
-				dataHandler.writeDataSet(playerName, x, y, z);
+				DataHandler.writeDataSet(playerName, x, y, z);
 
 				player.sendMessage(ChatColor.DARK_AQUA + "You've been frozen!");
 
 				sender.sendMessage(ChatColor.DARK_AQUA + "You've frozen " + playerName + "!");
+
+				if (Boolean.valueOf(config.getValue("kick-on-freeze"))) player.kickPlayer("You've been frozen.");
 
 				return true;
 			}
@@ -72,7 +79,7 @@ public class Main extends JavaPlugin implements Listener
 				return false;
 			}
 		}
-		if (command.getName().equalsIgnoreCase("unfreeze"))
+		if (label.equalsIgnoreCase("unfreeze"))
 		{
 			if (args.length > 0)
 			{
@@ -96,7 +103,7 @@ public class Main extends JavaPlugin implements Listener
 				return false;
 			}
 		}
-		if (command.getName().equalsIgnoreCase("frozenplayers"))
+		if (label.equalsIgnoreCase("frozenplayers"))
 		{
 			if (frozenPlayers.isEmpty()) sender.sendMessage(ChatColor.RED + "Nobody is frozen!");
 			else if (!frozenPlayers.isEmpty())
@@ -118,6 +125,18 @@ public class Main extends JavaPlugin implements Listener
 	}
 
 	@EventHandler
+	public void onPlayerChat(AsyncPlayerChatEvent event)
+	{
+		Player player = event.getPlayer();
+
+		if (Boolean.valueOf(config.getValue("mute-on-freeze")) && frozenPlayers.containsKey(player.getName()))
+		{
+			player.sendMessage(ChatColor.DARK_AQUA + "You're frozen and can't speak!");
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
 		Player player = event.getPlayer();
@@ -133,7 +152,7 @@ public class Main extends JavaPlugin implements Listener
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
-		dataHandler.loadDataFromFile(event.getPlayer(), frozenPlayers);
+		DataHandler.loadDataFromFile(event.getPlayer(), frozenPlayers);
 	}
 
 	@EventHandler
@@ -151,7 +170,7 @@ public class Main extends JavaPlugin implements Listener
 			String y = Double.toString(location.getY());
 			String z = Double.toString(location.getZ());
 
-			dataHandler.writeDataSet(playerName, x, y, z);
+			DataHandler.writeDataSet(playerName, x, y, z);
 		}
 	}
 }
