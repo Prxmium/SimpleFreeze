@@ -1,4 +1,4 @@
-package config;
+package main;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,51 +21,31 @@ public class Config
 	{ "mute-on-freeze", "false" },
 	{ "kick-on-freeze", "false" } };
 
-	private File configFile;
-
-	private ArrayList<ConfigOption> configOptions;
-
-	public Config(String directory, String fileName, String fileExtension)
-	{
-		configFile = new File(directory + fileName + fileExtension);
-
-		configOptions = new ArrayList<>();
-	}
+	private File configFile = new File("plugins/SimpleFreeze/config.txt");
 
 	public void validate()
 	{
-		if (configFile.exists())
+		if (configFile.exists() && configFile.length() != 0)
 		{
-			for (int i = 0; i < options.length; i++)
-			{
-				configOptions.add(new ConfigOption(options[i][0], options[i][1]));
-			}
-
 			loadOptions();
 
 			return;
 		}
-		else
+
+		try
 		{
-			try
-			{
-				configFile.createNewFile();
-			}
-			catch (IOException e)
-			{
-				Bukkit.getLogger().log(Level.WARNING, "Error while creating config.", e);
-			}
+			configFile.createNewFile();
 		}
-
-		int configLength = getLength();
-
-		if (configLength != configOptions.size()) return;
+		catch (IOException e)
+		{
+			Bukkit.getLogger().log(Level.WARNING, "Error while creating config.", e);
+		}
 
 		try (PrintWriter writer = new PrintWriter(configFile))
 		{
-			for (int i = 0; i < configOptions.size(); i++)
+			for (int i = 0; i < options.length; i++)
 			{
-				writer.println(configOptions.get(i).getKey() + delimiter + configOptions.get(i).getValue());
+				writer.println(options[i][0] + delimiter + options[i][1]);
 			}
 		}
 		catch (FileNotFoundException e)
@@ -99,10 +79,7 @@ public class Config
 			{
 				scanner.useDelimiter(delimiter);
 
-				if (configOptions.get(i).getKey().equals(scanner.next()))
-				{
-					configOptions.get(i).setValue(scanner.next());
-				}
+				if (options[i][0].equals(scanner.next())) options[i][1] = scanner.next();
 			}
 		}
 	}
@@ -130,10 +107,11 @@ public class Config
 
 	public String getValue(String key)
 	{
-		for (int i = 0; i < configOptions.size(); i++)
+		for (int i = 0; i < options.length; i++)
 		{
-			if (configOptions.get(i).getKey().equals(key)) return configOptions.get(i).getValue();
+			if (options[i][0].equals(key)) return options[i][1];
 		}
+
 		return null;
 	}
 }

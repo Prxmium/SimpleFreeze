@@ -17,13 +17,11 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import config.Config;
-
 public class Main extends JavaPlugin implements Listener
 {
 	FileHandler fileHandler = new FileHandler("plugins/SimpleFreeze");
 
-	Config config = new Config("plugins/SimpleFreeze/", "config", ".txt");
+	Config config = new Config();
 
 	public void onEnable()
 	{
