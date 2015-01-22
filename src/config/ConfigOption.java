@@ -1,11 +1,11 @@
 package config;
 
-public class ConfigKey
+public class ConfigOption
 {
 	private String key;
 	private String value;
 	
-	public ConfigKey(String key, String value)
+	public ConfigOption(String key, String value)
 	{
 		this.key = key;
 		this.value = value;
