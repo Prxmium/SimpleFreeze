@@ -3,46 +3,47 @@ package main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class DataHandler
+public class DataFile extends File
 {
-	private static final String directory = "plugins/SimpleFreeze/data.txt";
-	private static final String delimiter = ";";
+	private static final long serialVersionUID = 1L;
 
-	private static final File dataFile = new File(directory);
-
-	public static boolean validate()
+	public DataFile()
 	{
-		if (!dataFile.exists()) return false;
-		else return true;
+		super("plugins/SimpleFreeze/data.txt");
 	}
 
-	public static void createFile()
+	public void validate()
 	{
-		try
+		if (!exists())
 		{
-			dataFile.createNewFile();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
+			try
+			{
+				createNewFile();
+			}
+			catch (IOException e)
+			{
+				Bukkit.getLogger().log(Level.WARNING, "Error while creating config.", e);
+			}
 		}
 	}
 
-	public static void savePlayerData(HashMap<String, Location> frozenPlayers)
+	public void savePlayerData(HashMap<String, Location> frozenPlayers)
 	{
-		try (PrintWriter writer = new PrintWriter(dataFile))
+		try (PrintWriter writer = new PrintWriter(this))
 		{
 			Set<String> keys = frozenPlayers.keySet();
 
@@ -57,7 +58,7 @@ public class DataHandler
 				String y = Double.toString(location.getY());
 				String z = Double.toString(location.getZ());
 
-				writer.println(key + delimiter + x + delimiter + y + delimiter + z + delimiter);
+				writer.println(String.format("%s;%s;%s;%s", key, x, y, z));
 			}
 		}
 		catch (FileNotFoundException e)
@@ -66,9 +67,9 @@ public class DataHandler
 		}
 	}
 
-	public static void loadDataFromFile(Player player, HashMap<String, Location> frozenPlayers)
+	public void loadDataFromFile(Player player, HashMap<String, Location> frozenPlayers)
 	{
-		try (BufferedReader reader = new BufferedReader(new FileReader(dataFile)))
+		try (BufferedReader reader = Files.newBufferedReader(this.toPath(), Charset.defaultCharset()))
 		{
 			String line;
 			while ((line = reader.readLine()) != null)
@@ -96,13 +97,13 @@ public class DataHandler
 		}
 	}
 
-	public static void writeDataSet(String val1, String val2, String val3, String val4)
+	public void writeDataSet(String val1, String val2, String val3, String val4)
 	{
-		String dataSet = val1 + delimiter + val2 + delimiter + val3 + delimiter + val4 + delimiter;
+		String set = String.format("%s;%s;%s;%s;", val1, val2, val3, val4);
 
-		try (PrintWriter writer = new PrintWriter(dataFile))
+		try (PrintWriter writer = new PrintWriter(this))
 		{
-			writer.println(dataSet);
+			writer.println(set);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -116,7 +117,7 @@ public class DataHandler
 
 		try (Scanner scanner = new Scanner(dataSet))
 		{
-			scanner.useDelimiter(delimiter);
+			scanner.useDelimiter(";");
 
 			while (scanner.hasNext())
 			{

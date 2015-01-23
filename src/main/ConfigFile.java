@@ -3,29 +3,35 @@ package main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 
-public class Config
+public class ConfigFile extends File
 {
-	private String delimiter = ":";
+	private static final long serialVersionUID = 1L;
 
 	private String[][] options =
 	{
 	{ "mute-on-freeze", "false" },
-	{ "kick-on-freeze", "false" } };
+	{ "kick-on-freeze", "false" },
+	{ "mute-message", "You are frozen and cannot speak." },
+	{ "kick-message", "You have been frozen" } };
 
-	private File configFile = new File("plugins/SimpleFreeze/config.txt");
+	public ConfigFile()
+	{
+		super("plugins/SimpleFreeze/config.txt");
+	}
 
 	public void validate()
 	{
-		if (configFile.exists() && configFile.length() != 0)
+		if (exists() && length() != 0)
 		{
 			loadOptions();
 
@@ -34,18 +40,18 @@ public class Config
 
 		try
 		{
-			configFile.createNewFile();
+			createNewFile();
 		}
 		catch (IOException e)
 		{
 			Bukkit.getLogger().log(Level.WARNING, "Error while creating config.", e);
 		}
 
-		try (PrintWriter writer = new PrintWriter(configFile))
+		try (PrintWriter writer = new PrintWriter(this))
 		{
 			for (int i = 0; i < options.length; i++)
 			{
-				writer.println(options[i][0] + delimiter + options[i][1]);
+				writer.println(String.format("%s: %s", options[i][0], options[i][1]));
 			}
 		}
 		catch (FileNotFoundException e)
@@ -60,7 +66,7 @@ public class Config
 	{
 		ArrayList<String> lines = new ArrayList<>();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(configFile)))
+		try (BufferedReader reader = Files.newBufferedReader(this.toPath(), Charset.defaultCharset()))
 		{
 			String line;
 			while ((line = reader.readLine()) != null)
@@ -77,9 +83,9 @@ public class Config
 		{
 			try (Scanner scanner = new Scanner(lines.get(i)))
 			{
-				scanner.useDelimiter(delimiter);
+				scanner.useDelimiter(":");
 
-				if (options[i][0].equals(scanner.next())) options[i][1] = scanner.next();
+				if (options[i][0].equals(scanner.next().trim())) options[i][1] = scanner.next().trim();
 			}
 		}
 	}
@@ -88,7 +94,7 @@ public class Config
 	{
 		int lineCount = 0;
 
-		try (Scanner scanner = new Scanner(configFile))
+		try (Scanner scanner = new Scanner(this))
 		{
 			while (scanner.hasNextLine())
 			{
