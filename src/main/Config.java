@@ -99,13 +99,13 @@ public class Config
 		}
 		catch (IOException e)
 		{
-			Bukkit.getLogger().log(Level.WARNING, null, e);
+			Bukkit.getLogger().log(Level.WARNING, "Error while getting config length.", e);
 		}
 
 		return lineCount;
 	}
 
-	public String getValue(String key)
+	public String getValueOf(String key)
 	{
 		for (int i = 0; i < options.length; i++)
 		{

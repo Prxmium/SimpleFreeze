@@ -43,16 +43,26 @@ public class Main extends JavaPlugin implements Listener
 
 	private HashMap<String, Location> frozenPlayers = new HashMap<>();
 
+	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
 		if (label.equalsIgnoreCase("freeze"))
 		{
 			if (args.length > 0)
 			{
-				@SuppressWarnings("deprecation")
 				Player player = Bukkit.getPlayer(args[0]);
 
 				String playerName = player.getName();
+
+				if (frozenPlayers.containsKey(playerName))
+				{
+
+					frozenPlayers.remove(playerName);
+
+					player.sendMessage(ChatColor.DARK_AQUA + "You've been unfrozen!");
+
+					sender.sendMessage(ChatColor.DARK_AQUA + "You've unfrozen " + playerName + "!");
+				}
 
 				Location location = player.getLocation();
 
@@ -68,37 +78,13 @@ public class Main extends JavaPlugin implements Listener
 
 				sender.sendMessage(ChatColor.DARK_AQUA + "You've frozen " + playerName + "!");
 
-				if (Boolean.valueOf(config.getValue("kick-on-freeze"))) player.kickPlayer("You've been frozen.");
+				if (Boolean.valueOf(config.getValueOf("kick-on-freeze"))) player.kickPlayer("You've been frozen.");
 
 				return true;
 			}
 			else
 			{
 				sender.sendMessage(ChatColor.DARK_RED + "Wrong syntax!");
-
-				return false;
-			}
-		}
-		if (label.equalsIgnoreCase("unfreeze"))
-		{
-			if (args.length > 0)
-			{
-				@SuppressWarnings("deprecation")
-				Player player = Bukkit.getPlayer(args[0]);
-
-				String playerName = player.getName();
-
-				frozenPlayers.remove(playerName);
-
-				player.sendMessage(ChatColor.DARK_AQUA + "You've been unfrozen!");
-
-				sender.sendMessage(ChatColor.DARK_AQUA + "You've unfrozen " + playerName + "!");
-
-				return true;
-			}
-			else
-			{
-				sender.sendMessage(ChatColor.RED + "Wrong syntax!");
 
 				return false;
 			}
@@ -129,7 +115,7 @@ public class Main extends JavaPlugin implements Listener
 	{
 		Player player = event.getPlayer();
 
-		if (Boolean.valueOf(config.getValue("mute-on-freeze")) && frozenPlayers.containsKey(player.getName()))
+		if (Boolean.valueOf(config.getValueOf("mute-on-freeze")) && frozenPlayers.containsKey(player.getName()))
 		{
 			player.sendMessage(ChatColor.DARK_AQUA + "You're frozen and can't speak!");
 			event.setCancelled(true);

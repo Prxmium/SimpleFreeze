@@ -1,2 +1,6 @@
+1.5.1
+Change: /freeze is a toggle
+Removed: /unfreeze
+
 1.5
-- Config API
+- Config
