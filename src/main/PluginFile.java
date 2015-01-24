@@ -1,10 +1,6 @@
 package main;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
 
 public class PluginFile extends File
 {
@@ -19,14 +15,7 @@ public class PluginFile extends File
 	{
 		if (!exists())
 		{
-			try
-			{
-				createNewFile();
-			}
-			catch (IOException e)
-			{
-				Bukkit.getLogger().log(Level.WARNING, "Couldn't create plugin folder.", e);
-			}
+			mkdirs();	
 		}
 	}
 }

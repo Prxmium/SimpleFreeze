@@ -22,7 +22,7 @@ public class ConfigFile extends File
 	{ "mute-on-freeze", "false" },
 	{ "kick-on-freeze", "false" },
 	{ "mute-message", "You are frozen and cannot speak." },
-	{ "kick-message", "You have been frozen" } };
+	{ "kick-message", "You have been frozen." } };
 
 	public ConfigFile()
 	{
@@ -115,7 +115,7 @@ public class ConfigFile extends File
 	{
 		for (int i = 0; i < options.length; i++)
 		{
-			if (options[i][0].equals(key)) return options[i][1];
+			if (options[i][0].equalsIgnoreCase(key)) return options[i][1];
 		}
 
 		return null;

@@ -82,7 +82,7 @@ public class Main extends JavaPlugin implements Listener
 
 				sender.sendMessage(ChatColor.DARK_AQUA + playerName + " has been frozen.");
 
-				if (Boolean.valueOf(configFile.getValueOf("kick-on-freeze"))) player.kickPlayer(configFile.getValueOf("kick-message"));
+				if (Boolean.valueOf(configFile.getValueOf(ConfigOption.KICK_ON_FREEZE))) player.kickPlayer(configFile.getValueOf(ConfigOption.KICK_MESSAGE));
 
 				return true;
 			}
@@ -119,9 +119,9 @@ public class Main extends JavaPlugin implements Listener
 	{
 		Player player = event.getPlayer();
 
-		if (Boolean.valueOf(configFile.getValueOf("mute-on-freeze")) && frozenPlayers.containsKey(player.getName()))
+		if (Boolean.valueOf(configFile.getValueOf(ConfigOption.MUTE_ON_FREEZE)) && frozenPlayers.containsKey(player.getName()))
 		{
-			player.sendMessage(ChatColor.DARK_AQUA + configFile.getValueOf("mute-message"));
+			player.sendMessage(ChatColor.DARK_AQUA + configFile.getValueOf(ConfigOption.MUTE_MESSAGE));
 			event.setCancelled(true);
 		}
 	}

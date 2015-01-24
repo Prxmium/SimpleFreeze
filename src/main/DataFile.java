@@ -58,7 +58,7 @@ public class DataFile extends File
 				String y = Double.toString(location.getY());
 				String z = Double.toString(location.getZ());
 
-				writer.println(String.format("%s;%s;%s;%s", key, x, y, z));
+				writer.println(String.format("%s;%s;%s;%s;", key, x, y, z));
 			}
 		}
 		catch (FileNotFoundException e)
