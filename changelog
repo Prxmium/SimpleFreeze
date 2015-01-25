@@ -1,8 +1,10 @@
 1.5.1
-Added: Config option 'mute-message'
-Added: Config option 'kick-message'
-Change: /freeze is a toggle
-Removed: /unfreeze
+Added config option 'mute-message'
+Added config option 'kick-message'
+Changed /freeze to a toggle
+Changed config formatting
+Removed /unfreeze
+Optimized data handling
 
 1.5
-- Config
+Added: Config API

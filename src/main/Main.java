@@ -21,13 +21,11 @@ public class Main extends JavaPlugin implements Listener
 {
 	PluginFile pluginFile = new PluginFile();
 	ConfigFile configFile = new ConfigFile();
-	DataFile dataFile = new DataFile();
 
 	public void onEnable()
 	{
 		pluginFile.validate();
 		configFile.validate();
-		dataFile.validate();
 
 		getServer().getPluginManager().registerEvents(this, this);
 
@@ -36,9 +34,12 @@ public class Main extends JavaPlugin implements Listener
 
 	public void onDisable()
 	{
-		if (!frozenPlayers.isEmpty())
+		for (Player player : Bukkit.getOnlinePlayers())
 		{
-			dataFile.savePlayerData(frozenPlayers);
+			String playerName = player.getName();
+
+			if (!frozenPlayers.containsKey(playerName)) DataHandler.deletePlayer(playerName);
+			else DataHandler.savePlayer(playerName, player.getLocation());
 		}
 
 		getLogger().info("Disabled " + getName() + ".");
@@ -61,9 +62,9 @@ public class Main extends JavaPlugin implements Listener
 				{
 					frozenPlayers.remove(playerName);
 
-					player.sendMessage(ChatColor.DARK_AQUA + "You are no longer frozen.");
+					player.sendMessage(configFile.getValueOf(ConfigKey.UNFREEZE_MESSAGE));
 
-					sender.sendMessage(ChatColor.DARK_AQUA + playerName + " is no longer frozen.");
+					sender.sendMessage(playerName + " is no longer frozen.");
 
 					return true;
 				}
@@ -72,23 +73,17 @@ public class Main extends JavaPlugin implements Listener
 
 				frozenPlayers.put(playerName, location);
 
-				String x = Double.toString(location.getX());
-				String y = Double.toString(location.getY());
-				String z = Double.toString(location.getZ());
+				player.sendMessage(configFile.getValueOf(ConfigKey.FREEZE_MESSAGE));
 
-				dataFile.writeDataSet(playerName, x, y, z);
+				sender.sendMessage(playerName + " has been frozen.");
 
-				player.sendMessage(ChatColor.DARK_AQUA + "You have been frozen.");
-
-				sender.sendMessage(ChatColor.DARK_AQUA + playerName + " has been frozen.");
-
-				if (Boolean.valueOf(configFile.getValueOf(ConfigOption.KICK_ON_FREEZE))) player.kickPlayer(configFile.getValueOf(ConfigOption.KICK_MESSAGE));
+				if (Boolean.valueOf(configFile.getValueOf(ConfigKey.KICK_ON_FREEZE))) player.kickPlayer(configFile.getValueOf(ConfigKey.KICK_MESSAGE));
 
 				return true;
 			}
 			else
 			{
-				sender.sendMessage(ChatColor.DARK_RED + "Wrong syntax!");
+				sender.sendMessage(ChatColor.DARK_RED + "Wrong syntax.");
 
 				return false;
 			}
@@ -98,13 +93,13 @@ public class Main extends JavaPlugin implements Listener
 			if (frozenPlayers.isEmpty()) sender.sendMessage(ChatColor.RED + "There are no frozen players.");
 			else if (!frozenPlayers.isEmpty())
 			{
-				sender.sendMessage(ChatColor.DARK_AQUA + "Frozen players:");
+				sender.sendMessage("Frozen players:");
 
 				Set<String> keySet = frozenPlayers.keySet();
 
 				for (String key : keySet)
 				{
-					sender.sendMessage(ChatColor.DARK_AQUA + "- " + key);
+					sender.sendMessage("- " + key);
 				}
 			}
 
@@ -119,9 +114,9 @@ public class Main extends JavaPlugin implements Listener
 	{
 		Player player = event.getPlayer();
 
-		if (Boolean.valueOf(configFile.getValueOf(ConfigOption.MUTE_ON_FREEZE)) && frozenPlayers.containsKey(player.getName()))
+		if (Boolean.valueOf(configFile.getValueOf(ConfigKey.MUTE_ON_FREEZE)) && frozenPlayers.containsKey(player.getName()))
 		{
-			player.sendMessage(ChatColor.DARK_AQUA + configFile.getValueOf(ConfigOption.MUTE_MESSAGE));
+			player.sendMessage(configFile.getValueOf(ConfigKey.MUTE_MESSAGE));
 			event.setCancelled(true);
 		}
 	}
@@ -133,16 +128,19 @@ public class Main extends JavaPlugin implements Listener
 
 		String playerName = player.getName();
 
-		if (frozenPlayers.containsKey(playerName))
-		{
-			player.teleport(frozenPlayers.get(playerName));
-		}
+		if (frozenPlayers.containsKey(playerName)) player.teleport(frozenPlayers.get(playerName));
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)
 	{
-		dataFile.loadDataFromFile(event.getPlayer(), frozenPlayers);
+		Player player = event.getPlayer();
+
+		String playerName = player.getName();
+
+		DataHandler.createPlayer(playerName);
+
+		DataHandler.loadPlayer(playerName, frozenPlayers);
 	}
 
 	@EventHandler
@@ -152,15 +150,7 @@ public class Main extends JavaPlugin implements Listener
 
 		String playerName = player.getName();
 
-		if (frozenPlayers.containsKey(playerName))
-		{
-			Location location = frozenPlayers.get(playerName);
-
-			String x = Double.toString(location.getX());
-			String y = Double.toString(location.getY());
-			String z = Double.toString(location.getZ());
-
-			dataFile.writeDataSet(playerName, x, y, z);
-		}
+		if (frozenPlayers.containsKey(playerName)) DataHandler.savePlayer(playerName, player.getLocation());
+		else DataHandler.deletePlayer(playerName);
 	}
 }

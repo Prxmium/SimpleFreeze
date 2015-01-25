@@ -17,12 +17,14 @@ public class ConfigFile extends File
 {
 	private static final long serialVersionUID = 1L;
 
-	private String[][] options =
+	private String[][] keys =
 	{
-	{ "mute-on-freeze", "false" },
-	{ "kick-on-freeze", "false" },
-	{ "mute-message", "You are frozen and cannot speak." },
-	{ "kick-message", "You have been frozen." } };
+	{ ConfigKey.MUTE_ON_FREEZE, "false" },
+	{ ConfigKey.KICK_ON_FREEZE, "false" },
+	{ ConfigKey.MUTE_MESSAGE, "You are frozen and cannot speak." },
+	{ ConfigKey.KICK_MESSAGE, "You have been frozen." },
+	{ ConfigKey.FREEZE_MESSAGE, "You have been frozen." },
+	{ ConfigKey.UNFREEZE_MESSAGE, "You have been unfrozen." } };
 
 	public ConfigFile()
 	{
@@ -49,9 +51,9 @@ public class ConfigFile extends File
 
 		try (PrintWriter writer = new PrintWriter(this))
 		{
-			for (int i = 0; i < options.length; i++)
+			for (int i = 0; i < keys.length; i++)
 			{
-				writer.println(String.format("%s: %s", options[i][0], options[i][1]));
+				writer.println(String.format("%s: %s", keys[i][0], keys[i][1]));
 			}
 		}
 		catch (FileNotFoundException e)
@@ -85,7 +87,7 @@ public class ConfigFile extends File
 			{
 				scanner.useDelimiter(":");
 
-				if (options[i][0].equals(scanner.next().trim())) options[i][1] = scanner.next().trim();
+				if (keys[i][0].equals(scanner.next().trim())) keys[i][1] = scanner.next().trim();
 			}
 		}
 	}
@@ -113,9 +115,9 @@ public class ConfigFile extends File
 
 	public String getValueOf(String key)
 	{
-		for (int i = 0; i < options.length; i++)
+		for (int i = 0; i < keys.length; i++)
 		{
-			if (options[i][0].equalsIgnoreCase(key)) return options[i][1];
+			if (keys[i][0].equalsIgnoreCase(key)) return keys[i][1];
 		}
 
 		return null;
