@@ -1,0 +1,10 @@
+1.5.1
+Added config option 'mute-message'
+Added config option 'kick-message'
+Changed /freeze to a toggle
+Changed config formatting
+Removed /unfreeze
+Optimized data handling
+
+1.5
+Added: Config API
